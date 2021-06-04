@@ -1,6 +1,7 @@
 from odoo.tests import common
 from odoo.exceptions import ValidationError
 from datetime import date, timedelta
+import time
 
 
 class TestHelpdeskTicket(common.SavepointCase):
@@ -14,11 +15,11 @@ class TestHelpdeskTicket(common.SavepointCase):
             'name': 'Open',
             'login': 'user',
             'company_id': cls.company.id,
-            'groups_id': [(4, cls.ref('helpdesk_mgmt.group_helpdesk_user'))]
+            'groups_id': [(4, cls.env.ref('helpdesk_mgmt.group_helpdesk_user').id)]
         })
 
-        cls.stage_open = cls.env.ref('helpdesk.ticket.stage')
-        cls.stage_close = cls.env.ref('helpdesk.ticket.stage')
+        # cls.stage_open = cls.env.ref('helpdesk.ticket.stage')
+        # cls.stage_close = cls.env.ref('helpdesk.ticket.stage')
 
         cls.stage_open = cls.env['helpdesk.ticket.stage'].create({
             'name': 'Open',
@@ -37,19 +38,22 @@ class TestHelpdeskTicket(common.SavepointCase):
             'description': 'Ticket test manager',
             'stage_id': self.stage_open.id,
         })
+        time.sleep(1)
         new_ticket_manager.stage_id = self.stage_close.id
-        self.assertEqual(new_ticket_manager.closed_date_editable,
-                         False,
+        self.assertTrue(new_ticket_manager.closed_date_editable,
                          'Helpdesk Ticket: When the stage of a ticket is '
                          'closed and you are a manager, the editable '
-                         'closing date must be False.')
+                         'closing date must be True.')
 
         new_ticket_manager.stage_id = self.stage_open.id
-        self.assertEqual(new_ticket_manager.closed_date,
-                         False,
+        self.assertFalse(new_ticket_manager.closed_date,
                          'Helpdesk Ticket: When editing the stage '
                          'of a ticket already closed to an open stage, '
-                         'the closed date must be False.')
+                         'the closed date must be empty.')
+        self.assertFalse(new_ticket_manager.closed_date_editable,
+                         'Helpdesk Ticket: When editing the stage '
+                         'of a ticket already closed to an open stage, '
+                         'the editable closed date must be False.')
 
         yesterday = date.today() - timedelta(days=1)
         with self.assertRaises(ValidationError,

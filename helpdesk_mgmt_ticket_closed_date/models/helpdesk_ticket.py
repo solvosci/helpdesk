@@ -26,7 +26,7 @@ class HelpdeskTicket(models.Model):
     def _constrains_closed_date(self):
         for record in self.filtered("closed"):
             if (not record.closed_date or
-               record.closed_date < record._prepare_ref_create_date()):
+               record.closed_date <= record._prepare_ref_create_date()):
                 raise ValidationError(_(
                     "Wrong value for Closed Date:"
                     " It cannot be before the create date or empty!"
