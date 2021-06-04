@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="helpdesk_ticket_view_form_closed_date" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.form (closed_date)</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='closed_date']" position="before">
+                <field name="closed_date_editable" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='closed_date']" position="attributes">
+                <attribute name="readonly"/>
+                <attribute name="attrs">{"readonly": [('closed_date_editable', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
