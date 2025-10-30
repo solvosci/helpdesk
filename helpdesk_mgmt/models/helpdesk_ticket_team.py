@@ -140,3 +140,18 @@ class HelpdeskTeam(models.Model):
         values["alias_defaults"] = defaults = safe_eval(self.alias_defaults or "{}")
         defaults["team_id"] = self.id
         return values
+
+    @api.model
+    def action_dashboard_dynamic(self):
+        user = self.env.user
+        result = None
+        if user.has_group("helpdesk_mgmt.group_helpdesk_user") or user.has_group(
+            "helpdesk_mgmt.group_helpdesk_manager"
+        ):
+            result = self.env["ir.actions.actions"]._for_xml_id(
+            "helpdesk_mgmt.helpdesk_ticket_dashboard_action_user")
+        else:
+            result = self.env["ir.actions.actions"]._for_xml_id(
+            "helpdesk_mgmt.helpdesk_ticket_dashboard_action_user_own"
+        )
+        return result

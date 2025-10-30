@@ -1,11 +1,28 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <odoo>
     <!-- Actions -->
-    <record id="helpdesk_ticket_dashboard_action" model="ir.actions.act_window">
+    <record id="helpdesk_ticket_dashboard_action_dynamic" model="ir.actions.server">
+        <field name="name">Dashboard (dynamic)</field>
+        <field name="model_id" ref="helpdesk_mgmt.model_helpdesk_ticket_team" />
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_dashboard_dynamic()
+        </field>
+        <field name="groups_id" eval="[(4, ref('group_helpdesk_user_own'))]" />
+    </record>
+    <record id="helpdesk_ticket_dashboard_action_user_own" model="ir.actions.act_window">
         <field name="name">Dashboard</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">helpdesk.ticket.team</field>
         <field name="view_mode">kanban,tree,form,pivot</field>
+        <field name="domain">["|", ("user_ids", "in", [uid]), ("user_id", "=", uid)]</field>
+    </record>
+    <record id="helpdesk_ticket_dashboard_action_user" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">helpdesk.ticket.team</field>
+        <field name="view_mode">kanban,tree,form,pivot</field>
+        <field name="domain">[]</field>
     </record>
     <record id="helpdesk_ticket_action" model="ir.actions.act_window">
         <field name="name">Tickets</field>
@@ -67,7 +84,7 @@
         id="helpdesk_ticket_dashboard_menu"
         name="Dashboard"
         parent="helpdesk_ticket_main_menu"
-        action="helpdesk_ticket_dashboard_action"
+        action="helpdesk_ticket_dashboard_action_dynamic"
         sequence="1"
     />
     <menuitem
